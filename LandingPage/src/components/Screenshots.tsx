@@ -1,10 +1,10 @@
 import Screenshot from "./Screenshot";
 
 const items = [
-  { label: "Dashboard", src: "/screenshots/dashboard.png" },
-  { label: "Devices", src: "/screenshots/devices.png" },
-  { label: "Clipboard", src: "/screenshots/clipboard.png" },
-  { label: "Transfers", src: "/screenshots/transfers.png" },
+  { label: "Dashboard", src: "screenshots/dashboard.png" },
+  { label: "Devices", src: "screenshots/devices.png" },
+  { label: "Clipboard", src: "screenshots/clipboard.png" },
+  { label: "Transfers", src: "screenshots/transfers.png" },
 ];
 
 export default function Screenshots() {

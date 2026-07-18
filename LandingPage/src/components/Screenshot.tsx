@@ -7,6 +7,8 @@ interface ScreenshotProps {
 
 export default function Screenshot({ src, label }: ScreenshotProps) {
   const [failed, setFailed] = useState(false);
+  const base = import.meta.env.BASE_URL ?? "/";
+  const imageUrl = `${base.replace(/\/+$/, "")}${src.startsWith("/") ? "" : "/"}${src}`;
 
   return (
     <div className="glass rounded-2xl overflow-hidden group">
@@ -27,7 +29,7 @@ export default function Screenshot({ src, label }: ScreenshotProps) {
           </div>
         ) : (
           <img
-            src={src}
+            src={imageUrl}
             alt={`${label} screenshot`}
             className="w-full h-full object-cover"
             onError={() => setFailed(true)}
