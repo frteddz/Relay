@@ -1,38 +1,38 @@
-export default function Overview() {
-  const items = [
-    {
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-      ),
-      title: "Local-first",
-      description: "Everything stays on your network. No data touches external servers — your privacy is built in.",
-    },
-    {
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-        </svg>
-      ),
-      title: "Zero config",
-      description: "Install and connect. Relay automatically discovers devices on your network — no setup required.",
-    },
-    {
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-          <line x1="6" y1="6" x2="6" y2="6"/>
-          <line x1="6" y1="18" x2="6" y2="18"/>
-        </svg>
-      ),
-      title: "Multi-platform",
-      description: "Windows, Linux, and web — with a consistent experience across every device you own.",
-    },
-  ];
+const items = [
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    ),
+    title: "Local-first",
+    description: "Everything stays on your network. No data touches external servers — your privacy is built in.",
+  },
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    ),
+    title: "Zero config",
+    description: "Install and connect. Relay automatically discovers devices on your network — no setup required.",
+  },
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+        <line x1="6" y1="6" x2="6" y2="6"/>
+        <line x1="6" y1="18" x2="6" y2="18"/>
+      </svg>
+    ),
+    title: "Multi-platform",
+    description: "Windows and Linux, with a consistent experience across every device you own.",
+  },
+];
 
+export default function Overview() {
   return (
     <section id="overview" className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6">

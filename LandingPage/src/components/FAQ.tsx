@@ -3,11 +3,11 @@ import { useState } from "react";
 const faqs = [
   {
     q: "What is Relay?",
-    a: "Relay is a local-first device hub that lets you share clipboard text and files between your devices over your own network. It's open-source, privacy-focused, and requires no cloud infrastructure or user accounts.",
+    a: "Relay is a local-first device hub that lets you share clipboard text and files between your devices over your own network. It is open-source, privacy-focused, and requires no cloud infrastructure or user accounts.",
   },
   {
     q: "How does Relay communicate between devices?",
-    a: "Relay uses UDP multicast for local network discovery and direct TCP connections for file transfers. Devices find each other automatically when they're on the same network — no IP addresses or configuration required.",
+    a: "Relay uses UDP multicast for local network discovery and direct TCP connections for file transfers. Devices find each other automatically when they are on the same network — no IP addresses or configuration required.",
   },
   {
     q: "Is my data sent over the internet?",
@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     q: "Which platforms are supported?",
-    a: "Relay currently supports Windows 10/11 (x64) and Linux (.deb). A web version is also available for browsers that support WebSocket. macOS support is planned for a future release.",
+    a: "Relay currently supports Windows 10/11 (x64) and Linux (.deb). macOS support is planned for a future release.",
   },
   {
     q: "Is Relay free?",
@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     q: "How do I pair devices?",
-    a: "Install Relay on both devices, open the app, and initiate pairing from one device. The other device will receive a notification. Accept the request, and the devices are securely paired. Once trusted, they'll automatically connect when online.",
+    a: "Install Relay on both devices, open the app, and initiate pairing from one device. The other device will receive a notification. Accept the request, and the devices are securely paired. Once trusted, they will automatically connect when online.",
   },
 ];
 
@@ -50,7 +50,9 @@ export default function FAQ() {
             >
               <button
                 onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left"
+                aria-expanded={open === i}
+                aria-controls={`faq-answer-${i}`}
+                className="w-full flex items-center justify-between px-6 py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-relay-500"
               >
                 <span className="font-medium text-sm sm:text-base pr-4">{faq.q}</span>
                 <svg
@@ -65,11 +67,14 @@ export default function FAQ() {
                   className={`text-zinc-500 shrink-0 transition-transform duration-300 ${
                     open === i ? "rotate-180" : ""
                   }`}
+                  aria-hidden="true"
                 >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </button>
               <div
+                id={`faq-answer-${i}`}
+                role="region"
                 className={`overflow-hidden transition-all duration-300 ${
                   open === i ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                 }`}

@@ -18,14 +18,15 @@ export default function Navbar() {
 
   return (
     <nav
+      aria-label="Main navigation"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "bg-[#0a0a0b]/80 backdrop-blur-xl border-b border-white/[0.06]" : "bg-transparent"
       }`}
     >
       <div className="mx-auto max-w-7xl px-6 flex h-16 items-center justify-between">
-        <a href="#" className="flex items-center gap-2.5">
+        <a href="#" className="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-relay-500 rounded-lg" aria-label="Relay home">
           <div className="size-7 rounded-lg bg-gradient-to-br from-relay-500 to-purple-600 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
           </div>
@@ -37,14 +38,14 @@ export default function Navbar() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
+              className="text-sm text-zinc-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-relay-500 rounded"
             >
               {link.label}
             </a>
           ))}
           <a
             href="#download"
-            className="text-sm font-medium px-4 py-2 rounded-lg bg-relay-500 hover:bg-relay-600 transition-colors"
+            className="text-sm font-medium px-4 py-2 rounded-lg bg-relay-500 hover:bg-relay-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-relay-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0b]"
           >
             Get Relay
           </a>
@@ -52,7 +53,7 @@ export default function Navbar() {
 
         <a
           href="#download"
-          className="sm:hidden text-sm font-medium px-3 py-1.5 rounded-lg bg-relay-500 hover:bg-relay-600 transition-colors"
+          className="sm:hidden text-sm font-medium px-3 py-1.5 rounded-lg bg-relay-500 hover:bg-relay-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-relay-500"
         >
           Get Relay
         </a>

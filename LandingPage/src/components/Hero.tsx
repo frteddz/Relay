@@ -7,7 +7,7 @@ export default function Hero() {
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-zinc-400 mb-8">
           <span className="size-2 rounded-full bg-green-400 animate-pulse" />
-          v0.1.0 — Local-first device hub
+          Open-source &middot; Local-first &middot; Privacy-first
         </div>
 
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
@@ -24,13 +24,13 @@ export default function Hero() {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="#download"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-relay-500 hover:bg-relay-600 font-medium text-base transition-all duration-200 hover:scale-[1.02]"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-relay-500 hover:bg-relay-600 font-medium text-base transition-all duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-relay-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0b]"
           >
             Download Relay
           </a>
           <a
             href="#features"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl glass glass-hover font-medium text-base transition-all duration-200"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl glass glass-hover font-medium text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0b]"
           >
             Learn more
           </a>
@@ -57,13 +57,13 @@ export default function Hero() {
                     <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
                     </div>
-                    <span className="text-xs text-zinc-400">Phone</span>
+                    <span className="text-xs text-zinc-400">Laptop</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 animate-float" style={{ animationDelay: "2s" }}>
                     <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                     </div>
-                    <span className="text-xs text-zinc-400">Web</span>
+                    <span className="text-xs text-zinc-400">Server</span>
                   </div>
                 </div>
               </div>

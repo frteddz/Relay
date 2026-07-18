@@ -6,6 +6,11 @@ html {
   scroll-behavior: smooth;
 }
 
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #6c63ff, 0 0 0 4px #0a0a0b;
+}
+
 body {
   @apply bg-[#0a0a0b] text-[#e4e4e7];
 }
