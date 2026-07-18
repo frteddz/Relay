@@ -161,7 +161,7 @@ export class PairingService implements IPairingService {
   }
 }
 
-function codesMatch(expected: string, actual: string): boolean {
+export function codesMatch(expected: string, actual: string): boolean {
   if (expected.length !== actual.length) return false;
   let difference = 0;
   for (let index = 0; index < expected.length; index += 1) {

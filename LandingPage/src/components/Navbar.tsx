@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import { RELEASES_URL } from "../config/downloads";
 
 const links = [
   { label: "Features", href: "#features" },
   { label: "FAQ", href: "#faq" },
+  { label: "Changelog", href: "#changelog" },
+  { label: "Versions", href: RELEASES_URL, external: true },
   { label: "Download", href: "#download" },
 ];
 
@@ -38,6 +41,7 @@ export default function Navbar() {
             <a
               key={link.href}
               href={link.href}
+              {...("external" in link && link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
               className="text-sm text-zinc-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-relay-500 rounded"
             >
               {link.label}

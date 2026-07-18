@@ -6,6 +6,7 @@ import { useStore } from "../store";
 import { getApi } from "../ipc";
 import type { Device } from "../../core/types";
 import type { NotificationItem } from "../../core/types";
+import { writeToClipboard } from "../utils/clipboard";
 
 let initialized = false;
 let discoveryStarted = false;
@@ -15,7 +16,10 @@ let cleanupFns: Array<() => void> = [];
 type Handler<K extends keyof CoreEvents> = (payload: CoreEvents[K]) => void;
 
 export function getCore(): CoreContext {
-  if (!coreInstance) coreInstance = createCore(eventBus);
+  if (!coreInstance) {
+    const settings = useStore.getState().settings;
+    coreInstance = createCore(eventBus, (settings as any).signalingUrl);
+  }
   return coreInstance;
 }
 
@@ -186,7 +190,7 @@ export function connectCore(): void {
               type: "unknown",
               os: msg.fromOs ?? "unknown",
               ip: msg.fromIp,
-              version: "0.1.0",
+              version: "v0.1.2-A",
               capabilities: { clipboard: true, fileTransfer: true, linkShare: true },
               ts: Date.now(),
             });
@@ -289,6 +293,7 @@ export function connectCore(): void {
           api.clipboard.onSyncReceived((msg) => {
             if (core.pairing.isTrusted(msg.fromId)) {
               core.clipboard.receive(msg.text, msg.fromId);
+              writeToClipboard(msg.text).catch(() => undefined);
             }
           })
         );
@@ -435,19 +440,38 @@ export async function sendClipboardToDevices(text: string): Promise<void> {
   const deviceName = useStore.getState().settings.deviceName || "Relay";
   core.clipboard.publish(text);
 
-  if (core.pairing.trusted().length === 0) return;
+  const trustedDevices = core.pairing.trusted();
+  if (trustedDevices.length === 0) return;
 
   if (api.clipboard) {
-    await api.clipboard.sendSync(text, deviceName);
-  } else if (core.sendSignal && core.deviceId) {
-    core.sendSignal({
+    try {
+      await api.clipboard.sendSync(text, deviceName);
+      return;
+    } catch {
+      // Fall through to signal-based sending
+    }
+  }
+
+  if (core.sendSignal && core.deviceId) {
+    const payload = {
       type: "clipboard-sync",
       fromId: core.deviceId,
       text,
       fromName: deviceName,
       timestamp: Date.now(),
-      expiresAt: Date.now() + 5000,
-    });
+      expiresAt: Date.now() + 10000,
+    };
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        core.sendSignal(payload);
+        return;
+      } catch {
+        if (attempt === 0) {
+          await new Promise((r) => setTimeout(r, 500));
+        }
+      }
+    }
   }
 }
 

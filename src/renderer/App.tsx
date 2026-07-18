@@ -8,6 +8,7 @@ import { NotificationsPage } from "../features/notifications/NotificationsPage";
 import { ClipboardPage } from "../features/clipboard/ClipboardPage";
 import { TransferPage } from "../features/transfer/TransferPage";
 import { SettingsPage } from "../features/settings/SettingsPage";
+import { PairingPage } from "../features/pairing/PairingPage";
 import { TermsPage } from "../features/terms/TermsPage";
 import { hasAcceptedTerms } from "../features/terms/termsStorage";
 
@@ -23,6 +24,7 @@ const router = createHashRouter([
       { path: "clipboard", element: <ClipboardPage /> },
       { path: "transfer", element: <TransferPage /> },
       { path: "settings", element: <SettingsPage /> },
+      { path: "pair", element: <PairingPage /> },
     ],
   },
 ]);

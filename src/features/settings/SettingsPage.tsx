@@ -81,6 +81,16 @@ export function SettingsPage() {
             className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white transition focus:border-brand-400 focus:outline-none"
           />
         </label>
+        <label className="block border-b border-white/5 py-3">
+          <span className="text-sm text-white/75">Signaling server</span>
+          <p className="mt-1 text-xs text-white/40">WebSocket URL for device discovery (e.g., ws://192.168.1.5:4001)</p>
+          <input
+            value={(settings as any).signalingUrl ?? "ws://localhost:4001"}
+            onChange={(e) => set({ signalingUrl: e.target.value } as any)}
+            placeholder="ws://localhost:4001"
+            className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white transition focus:border-brand-400 focus:outline-none"
+          />
+        </label>
         <Toggle
           label="Auto start"
           checked={settings.autoStart}
@@ -133,7 +143,7 @@ export function SettingsPage() {
       <Card className="hover:border-white/15">
         <SectionTitle title="About Relay" />
         <div className="space-y-1 text-sm text-white/55">
-          <p>Relay v0.1.0</p>
+          <p>Relay v0.1.2-A</p>
           <p>Local-first · Privacy-first · Open source</p>
           <p className="text-white/35">No telemetry. No ads. No accounts.</p>
         </div>

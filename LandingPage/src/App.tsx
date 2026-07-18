@@ -5,6 +5,7 @@ import Features from "./components/Features";
 import CrossPlatform from "./components/CrossPlatform";
 import Screenshots from "./components/Screenshots";
 import FAQ from "./components/FAQ";
+import Changelog from "./components/Changelog";
 import Download from "./components/Download";
 import Footer from "./components/Footer";
 
@@ -18,6 +19,7 @@ export default function App() {
       <CrossPlatform />
       <Screenshots />
       <FAQ />
+      <Changelog />
       <Download />
       <Footer />
     </div>

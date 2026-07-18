@@ -7,4 +7,5 @@ export interface Settings {
   deviceName: string;
   autoStart: boolean;
   autoDiscovery: boolean;
+  signalingUrl: string;
 }

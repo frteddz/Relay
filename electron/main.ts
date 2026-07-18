@@ -90,7 +90,7 @@ function startDiscovery(deviceName: string): void {
 
   discovery = new RelayDiscovery({
     name: deviceName,
-    version: "0.1.0",
+    version: "v0.1.2-A",
     devMode: isDevMode,
     signalingUrl: process.env.SIGNALING_URL,
   });

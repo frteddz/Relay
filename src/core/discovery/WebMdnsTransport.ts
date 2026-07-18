@@ -40,7 +40,7 @@ function buildDevice(name: string): Device {
     ip: "0.0.0.0",
     state: "online",
     lastSeen: Date.now(),
-    version: "0.1.0",
+    version: "v0.1.2-A",
     capabilities: { clipboard: false, fileTransfer: false, linkShare: false },
   };
 }
@@ -77,9 +77,9 @@ export class WebMdnsTransport implements MdnsTransport {
     this.onSignal = cb;
   }
 
-  sendSignal(payload: Record<string, unknown>): void {
+  sendSignal(payload: Record<string, unknown>, targetId?: string): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
-    this.ws.send(JSON.stringify({ type: "signal", payload }));
+    this.ws.send(JSON.stringify({ type: "signal", payload, target: targetId }));
   }
 
   start(handlers: DiscoveryTransportEvents): void {

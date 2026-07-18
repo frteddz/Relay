@@ -126,7 +126,7 @@ export class RelayDiscovery {
       type: "desktop",
       os: detectOs(),
       ip: this.localIp,
-      version: opts.version ?? "0.1.0",
+      version: opts.version ?? "v0.1.2-A",
       capabilities: { clipboard: true, fileTransfer: true, linkShare: true },
       ts: Date.now(),
     };

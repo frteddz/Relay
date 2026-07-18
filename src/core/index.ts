@@ -1,6 +1,6 @@
 import { EventBus, eventBus } from "./EventBus";
 import { DiscoveryService } from "./DiscoveryService";
-import { PairingService } from "./PairingService";
+import { PairingService, codesMatch } from "./PairingService";
 import { ConnectionManager } from "./ConnectionManager";
 import { DeviceRegistry } from "./DeviceRegistry";
 import { TransferManager } from "./TransferManager";
@@ -28,19 +28,23 @@ export interface CoreContext {
   clipboard: IClipboardService;
   deviceId?: string;
   setDeviceName?(name: string): void;
-  sendSignal?(payload: Record<string, unknown>): void;
+  sendSignal?(payload: Record<string, unknown>, targetId?: string): void;
+  activeShortCode?: string;
+  setActiveShortCode?(code: string | null): void;
 }
 
-export function createCore(bus: EventBus = eventBus): CoreContext {
+export function createCore(bus: EventBus = eventBus, signalingUrl?: string): CoreContext {
   const registry = new DeviceRegistry(bus);
   const pairing = new PairingService(bus, registry);
   const connection = new ConnectionManager(bus, registry, pairing);
   const clipboardService = new ClipboardService(bus);
 
+  let activeShortCode: string | undefined = undefined;
+
   let transport;
   const webTransport: WebMdnsTransport | undefined =
     typeof window !== "undefined" && typeof WebSocket !== "undefined" && !window.relay?.isElectron
-      ? new WebMdnsTransport()
+      ? new WebMdnsTransport(signalingUrl)
       : undefined;
   try {
     const api =
@@ -59,13 +63,36 @@ export function createCore(bus: EventBus = eventBus): CoreContext {
 
   if (webTransport) {
     webTransport.setOnSignal((payload) => {
-      if (payload.type === "clipboard-sync" && payload.from) {
-        if (pairing.isTrusted(payload.from as string)) {
-          clipboardService.receive(payload.text as string, payload.from as string);
+      const fromId = payload.from as string | undefined;
+      if (!fromId) return;
+
+      if (payload.type === "clipboard-sync") {
+        if (pairing.isTrusted(fromId)) {
+          clipboardService.receive(payload.text as string, fromId);
           if (typeof payload.text === "string") {
             writeToClipboard(payload.text).catch(() => undefined);
           }
         }
+        return;
+      }
+
+      if (payload.type === "pair-verify") {
+        const code = payload.code as string;
+        if (activeShortCode && code && codesMatch(activeShortCode, code)) {
+          pairing.trust(fromId);
+          bus.emit("pairing:trustChanged", { id: fromId, trusted: true });
+          webTransport.sendSignal(
+            { type: "pair-verified", fromId: webDeviceId },
+            fromId,
+          );
+        }
+        return;
+      }
+
+      if (payload.type === "pair-verified") {
+        pairing.trust(fromId);
+        bus.emit("pairing:trustChanged", { id: fromId, trusted: true });
+        return;
       }
     });
   }
@@ -80,6 +107,8 @@ export function createCore(bus: EventBus = eventBus): CoreContext {
     clipboard: clipboardService,
     deviceId: webDeviceId,
     setDeviceName: webTransport ? (name) => webTransport.setDeviceInfo({ name }) : undefined,
-    sendSignal: webTransport ? (payload) => webTransport.sendSignal(payload) : undefined,
+    sendSignal: webTransport ? (payload, targetId) => webTransport.sendSignal(payload, targetId) : undefined,
+    activeShortCode,
+    setActiveShortCode: (code) => { activeShortCode = code ?? undefined; },
   };
 }

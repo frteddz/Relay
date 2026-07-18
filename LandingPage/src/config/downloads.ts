@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { windowsIcon, linuxIcon, androidIcon } from "./icons";
 
+export const RELEASES_URL = "https://github.com/frteddz/Relay/releases";
+
 export interface DownloadEntry {
   platform: string;
   arch: string;
@@ -31,7 +33,7 @@ export const downloads: DownloadEntry[] = [
     platform: "Android",
     arch: "Universal",
     format: ".apk",
-    url: "https://github.com/frteddz/Relay/releases/download/v0.1.1-dev/Relay-v0.1.1-dev.apk",
+    url: "https://github.com/frteddz/Relay/releases/download/v0.1.2-A/Relay-v0.1.2-A.apk",
     os: "android",
     icon: androidIcon,
   },

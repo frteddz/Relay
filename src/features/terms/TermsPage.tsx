@@ -122,7 +122,7 @@ export function TermsPage({ onAccept }: { onAccept: () => void }) {
           </p>
 
           <div className="mt-6 text-center text-xs text-white/30">
-            Relay v0.1.0 · Terms Version 1
+            Relay v0.1.2-A · Terms Version 1
           </div>
         </div>
 

@@ -5,6 +5,7 @@ export const defaultSettings: Settings = {
   deviceName: "My Computer",
   autoStart: false,
   autoDiscovery: true,
+  signalingUrl: "ws://localhost:4001",
 };
 
 export const PLATFORM: NodeJS.Platform | "browser" = (() => {
