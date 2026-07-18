@@ -43,6 +43,7 @@ export function createCore(bus: EventBus = eventBus, signalingUrl?: string): Cor
   let activeShortCode: string | undefined = undefined;
 
   let transport;
+  let ipcTransport: IpcMdnsTransport | undefined;
   const webTransport: WebMdnsTransport | undefined =
     typeof window !== "undefined" && typeof WebSocket !== "undefined" && !window.relay?.isElectron
       ? new WebMdnsTransport(signalingUrl)
@@ -53,49 +54,58 @@ export function createCore(bus: EventBus = eventBus, signalingUrl?: string): Cor
         ? window.relay
         : null;
     if (api?.isElectron) {
-      transport = new IpcMdnsTransport();
+      ipcTransport = new IpcMdnsTransport();
+      transport = ipcTransport;
     }
   } catch {
     /* not in renderer */
   }
 
+  const activeTransport = webTransport ?? ipcTransport;
   const webDeviceId: string | undefined =
     webTransport ? (() => { try { return localStorage.getItem("relay:webDeviceId") ?? undefined; } catch { return undefined; } })() : undefined;
 
-  if (webTransport) {
-    webTransport.setOnSignal((payload) => {
-      const fromId = payload.from as string | undefined;
-      if (!fromId) return;
+  const handleSignal = (payload: Record<string, unknown>) => {
+    const fromId = payload.from as string | undefined;
+    if (!fromId) return;
 
-      if (payload.type === "clipboard-sync") {
-        if (pairing.isTrusted(fromId)) {
-          clipboardService.receive(payload.text as string, fromId);
-          if (typeof payload.text === "string") {
-            writeToClipboard(payload.text).catch(() => undefined);
-          }
+    if (payload.type === "clipboard-sync") {
+      if (pairing.isTrusted(fromId)) {
+        clipboardService.receive(payload.text as string, fromId);
+        if (typeof payload.text === "string") {
+          writeToClipboard(payload.text).catch(() => undefined);
         }
-        return;
       }
+      return;
+    }
 
-      if (payload.type === "pair-verify") {
-        const code = payload.code as string;
-        if (activeShortCode && code && codesMatch(activeShortCode, code)) {
-          pairing.trust(fromId);
-          bus.emit("pairing:trustChanged", { id: fromId, trusted: true });
-          webTransport.sendSignal(
-            { type: "pair-verified", fromId: webDeviceId },
+    if (payload.type === "pair-verify") {
+      const code = payload.code as string;
+      if (activeShortCode && code && codesMatch(activeShortCode, code)) {
+        pairing.trust(fromId);
+        bus.emit("pairing:trustChanged", { id: fromId, trusted: true });
+        if (activeTransport && "sendSignal" in activeTransport) {
+          (activeTransport as { sendSignal(p: Record<string, unknown>, t?: string): void }).sendSignal(
+            { type: "pair-verified" },
             fromId,
           );
         }
-        return;
       }
+      return;
+    }
 
-      if (payload.type === "pair-verified") {
-        pairing.trust(fromId);
-        bus.emit("pairing:trustChanged", { id: fromId, trusted: true });
-        return;
-      }
-    });
+    if (payload.type === "pair-verified") {
+      pairing.trust(fromId);
+      bus.emit("pairing:trustChanged", { id: fromId, trusted: true });
+      return;
+    }
+  };
+
+  if (webTransport) {
+    webTransport.setOnSignal(handleSignal);
+  }
+  if (ipcTransport) {
+    ipcTransport.setOnSignal(handleSignal);
   }
 
   return {
@@ -108,7 +118,9 @@ export function createCore(bus: EventBus = eventBus, signalingUrl?: string): Cor
     clipboard: clipboardService,
     deviceId: webDeviceId,
     setDeviceName: webTransport ? (name) => webTransport.setDeviceInfo({ name }) : undefined,
-    sendSignal: webTransport ? (payload, targetId) => webTransport.sendSignal(payload, targetId) : undefined,
+    sendSignal: activeTransport && "sendSignal" in activeTransport
+      ? (payload, targetId) => (activeTransport as { sendSignal(p: Record<string, unknown>, t?: string): void }).sendSignal(payload, targetId)
+      : undefined,
     activeShortCode,
     setActiveShortCode: (code) => { activeShortCode = code ?? undefined; },
     updateSignalingUrl: webTransport ? (url) => webTransport.updateUrl(url) : undefined,

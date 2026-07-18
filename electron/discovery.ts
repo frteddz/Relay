@@ -25,13 +25,14 @@ export interface DeviceBeacon {
 }
 
 export interface SignalingMessage {
-  type: "pair-request" | "pair-response" | "clipboard-sync" | "transfer-request";
+  type: "pair-request" | "pair-response" | "clipboard-sync" | "transfer-request" | "pair-verify" | "pair-verified";
   requestId: string;
   fromId: string;
   fromName: string;
   fromOs?: DeviceBeacon["os"];
   toId?: string;
   accepted?: boolean;
+  code?: string;
   text?: string;
   timestamp?: number;
   fileName?: string;
@@ -56,6 +57,8 @@ export interface SignalingCallbacks {
   onPairResponse: (msg: SignalingMessage, fromIp: string) => void;
   onClipboardSync?: (msg: SignalingMessage, fromIp: string) => void;
   onTransferRequest?: (msg: SignalingMessage, fromIp: string) => void;
+  onPairVerify?: (msg: SignalingMessage, fromIp: string) => void;
+  onPairVerified?: (msg: SignalingMessage, fromIp: string) => void;
 }
 
 function getMachineId(devMode: boolean): string {
@@ -162,6 +165,10 @@ export class RelayDiscovery {
             this.signalCallbacks?.onClipboardSync?.(sig, rinfo.address);
           } else if (sig.type === "transfer-request") {
             this.signalCallbacks?.onTransferRequest?.(sig, rinfo.address);
+          } else if (sig.type === "pair-verify") {
+            this.signalCallbacks?.onPairVerify?.(sig, rinfo.address);
+          } else if (sig.type === "pair-verified") {
+            this.signalCallbacks?.onPairVerified?.(sig, rinfo.address);
           }
           return;
         }
@@ -310,6 +317,10 @@ export class RelayDiscovery {
       this.signalCallbacks?.onClipboardSync?.(sig, "0.0.0.0");
     } else if (sig.type === "transfer-request") {
       this.signalCallbacks?.onTransferRequest?.(sig, "0.0.0.0");
+    } else if (sig.type === "pair-verify") {
+      this.signalCallbacks?.onPairVerify?.(sig, "0.0.0.0");
+    } else if (sig.type === "pair-verified") {
+      this.signalCallbacks?.onPairVerified?.(sig, "0.0.0.0");
     }
   }
 

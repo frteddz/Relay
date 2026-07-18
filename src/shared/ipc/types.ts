@@ -130,6 +130,12 @@ declare global {
       app: {
         onNavigate(callback: (route: string) => void): () => void;
       };
+      signal: {
+        send(args: { payload: Record<string, unknown>; targetId?: string }): Promise<boolean>;
+        onReceived(
+          callback: (msg: { type: string; code?: string; fromId: string; fromName: string; fromIp: string }) => void
+        ): () => void;
+      };
       window: {
         minimize(): void;
         maximize(): void;

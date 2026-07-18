@@ -159,6 +159,12 @@ function startDiscovery(deviceName: string): void {
           "/transfer"
         );
       },
+      onPairVerify: (msg: SignalingMessage, fromIp: string) => {
+        sendToRenderer("signal:received", { ...msg, fromIp });
+      },
+      onPairVerified: (msg: SignalingMessage, fromIp: string) => {
+        sendToRenderer("signal:received", { ...msg, fromIp });
+      },
     }
   );
 
@@ -258,6 +264,29 @@ function registerIpcHandlers(): void {
         text: args.text,
         timestamp: Date.now(),
         expiresAt: Date.now() + 5000,
+      };
+      discovery.sendSignal("", msg);
+      return true;
+    }
+  );
+
+  ipcMain.handle(
+    "signal:send",
+    (
+      _event,
+      args: { payload: Record<string, unknown>; targetId?: string }
+    ) => {
+      if (!discovery) return false;
+      const msg: SignalingMessage = {
+        type: args.payload.type as SignalingMessage["type"],
+        requestId: (args.payload.requestId as string) ?? `sig-${Date.now()}`,
+        fromId: discovery.getMachineId(),
+        fromName: getDeviceName(),
+        toId: args.targetId,
+        code: args.payload.code as string | undefined,
+        text: args.payload.text as string | undefined,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + 60000,
       };
       discovery.sendSignal("", msg);
       return true;

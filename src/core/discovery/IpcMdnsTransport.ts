@@ -32,6 +32,7 @@ export class IpcMdnsTransport implements MdnsTransport {
   private handlers: DiscoveryTransportEvents | null = null;
   private running = false;
   private cleanups: Array<() => void> = [];
+  private signalHandler: ((payload: Record<string, unknown>) => void) | null = null;
 
   start(handlers: DiscoveryTransportEvents): void {
     if (this.running) return;
@@ -58,11 +59,30 @@ export class IpcMdnsTransport implements MdnsTransport {
         this.handlers?.changed(beaconToDevice(beacon as DeviceBeacon));
       })
     );
+
+    if (api.signal) {
+      this.cleanups.push(
+        api.signal.onReceived((msg) => {
+          this.signalHandler?.(msg as Record<string, unknown>);
+        })
+      );
+    }
+  }
+
+  sendSignal(payload: Record<string, unknown>, targetId?: string): void {
+    const api = getApi();
+    if (!api.isElectron || !api.signal) return;
+    api.signal.send({ payload, targetId });
+  }
+
+  setOnSignal(handler: (payload: Record<string, unknown>) => void): void {
+    this.signalHandler = handler;
   }
 
   stop(): void {
     this.running = false;
     this.handlers = null;
+    this.signalHandler = null;
     for (const cleanup of this.cleanups) cleanup();
     this.cleanups = [];
   }

@@ -128,6 +128,19 @@ const api = {
     },
   },
 
+  signal: {
+    send(args: { payload: Record<string, unknown>; targetId?: string }): Promise<boolean> {
+      return ipcRenderer.invoke("signal:send", args);
+    },
+    onReceived(
+      callback: (msg: { type: string; code?: string; fromId: string; fromName: string; fromIp: string }) => void
+    ): () => void {
+      const handler = (_event: unknown, msg: unknown) => callback(msg as never);
+      ipcRenderer.on("signal:received", handler);
+      return () => ipcRenderer.removeListener("signal:received", handler);
+    },
+  },
+
   transfer: {
     sendFile(args: {
       targetIp: string;

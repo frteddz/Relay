@@ -8,6 +8,7 @@ export interface RelayApi {
   pairing?: NonNullable<Window["relay"]>["pairing"];
   clipboard?: NonNullable<Window["relay"]>["clipboard"];
   transfer?: NonNullable<Window["relay"]>["transfer"];
+  signal?: NonNullable<Window["relay"]>["signal"];
   app?: NonNullable<Window["relay"]>["app"];
   window?: NonNullable<Window["relay"]>["window"];
 }
