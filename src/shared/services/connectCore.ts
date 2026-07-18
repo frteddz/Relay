@@ -190,7 +190,7 @@ export function connectCore(): void {
               type: "unknown",
               os: msg.fromOs ?? "unknown",
               ip: msg.fromIp,
-              version: "v0.1.2-A",
+              version: "v0.1.3-A",
               capabilities: { clipboard: true, fileTransfer: true, linkShare: true },
               ts: Date.now(),
             });

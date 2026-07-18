@@ -1,6 +1,6 @@
 {
   "name": "relay",
-  "version": "0.1.2-A",
+  "version": "0.1.3-A",
   "description": "A modern, open-source cross-platform device hub.",
   "main": "dist-electron/main.js",
   "author": "Relay Contributors",

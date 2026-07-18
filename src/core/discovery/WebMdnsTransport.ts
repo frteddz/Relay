@@ -1,6 +1,8 @@
 import type { Device } from "../types";
 import type { DiscoveryTransportEvents, MdnsTransport } from "./MdnsTransport";
 
+const SAVED_URL_KEY = "relay:signalingUrl";
+
 function getDeviceId(): string {
   const key = "relay:webDeviceId";
   try {
@@ -13,6 +15,20 @@ function getDeviceId(): string {
   } catch {
     return crypto.randomUUID();
   }
+}
+
+function getSavedUrl(): string | null {
+  try {
+    return localStorage.getItem(SAVED_URL_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveUrl(url: string): void {
+  try {
+    localStorage.setItem(SAVED_URL_KEY, url);
+  } catch { /* ignore */ }
 }
 
 function detectOsType(): { os: Device["os"]; type: Device["type"] } {
@@ -40,7 +56,7 @@ function buildDevice(name: string): Device {
     ip: "0.0.0.0",
     state: "online",
     lastSeen: Date.now(),
-    version: "v0.1.2-A",
+    version: "v0.1.3-A",
     capabilities: { clipboard: false, fileTransfer: false, linkShare: false },
   };
 }
@@ -58,12 +74,11 @@ export class WebMdnsTransport implements MdnsTransport {
   private device: Device;
   private url: string;
   private onSignal: SignalCallback | null = null;
+  private connectionStatusCallback: ((connected: boolean) => void) | null = null;
 
   constructor(url?: string) {
-    this.url =
-      url ??
-      import.meta.env.VITE_SIGNALING_URL ??
-      "ws://localhost:4001";
+    const saved = getSavedUrl();
+    this.url = url && url !== "ws://localhost:4001" ? url : saved ?? url ?? "ws://localhost:4001";
     this.device = buildDevice("Web Browser");
   }
 
@@ -77,9 +92,27 @@ export class WebMdnsTransport implements MdnsTransport {
     this.onSignal = cb;
   }
 
+  setOnConnectionStatus(cb: (connected: boolean) => void): void {
+    this.connectionStatusCallback = cb;
+  }
+
   sendSignal(payload: Record<string, unknown>, targetId?: string): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
     this.ws.send(JSON.stringify({ type: "signal", payload, target: targetId }));
+  }
+
+  getUrl(): string {
+    return this.url;
+  }
+
+  updateUrl(url: string): void {
+    if (url === this.url) return;
+    this.url = url;
+    saveUrl(url);
+    if (this.running) {
+      this.closeWs();
+      this.connect();
+    }
   }
 
   start(handlers: DiscoveryTransportEvents): void {
@@ -111,17 +144,25 @@ export class WebMdnsTransport implements MdnsTransport {
     return this.running;
   }
 
+  private closeWs(): void {
+    if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
+    if (this.announceTimer) { clearInterval(this.announceTimer); this.announceTimer = null; }
+    if (this.ws) { this.ws.onclose = null; this.ws.close(); this.ws = null; }
+  }
+
   private connect(): void {
     if (!this.running || !this.handlers) return;
 
     try {
       this.ws = new WebSocket(this.url);
     } catch {
+      this.connectionStatusCallback?.(false);
       this.scheduleReconnect();
       return;
     }
 
     this.ws.onopen = () => {
+      this.connectionStatusCallback?.(true);
       this.sendJoin();
       this.announceTimer = setInterval(() => this.sendJoin(), 30000);
     };
@@ -137,6 +178,7 @@ export class WebMdnsTransport implements MdnsTransport {
 
     this.ws.onclose = () => {
       this.ws = null;
+      this.connectionStatusCallback?.(false);
       if (this.announceTimer) {
         clearInterval(this.announceTimer);
         this.announceTimer = null;

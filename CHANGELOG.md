@@ -5,6 +5,46 @@ All notable changes to Relay will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.1.3-A] - 2026-07-19
+
+### Added
+- **Embedded signaling server** — Electron now auto-starts the WebSocket signaling server on port 4001 (fallback 4002) at launch. No manual `node server/signaling.mjs` required.
+- **Signaling server URL in UDP beacon** — Desktop devices now broadcast their signaling server address (`ws://<ip>:4001`) in multicast beacons, enabling other devices to discover and connect.
+- **Auto-discovery of signaling server on Android** — `WebMdnsTransport` now checks for a saved signaling URL on startup, and QR scan automatically configures the connection URL.
+- **HTTP discovery endpoint** — Signaling server serves `/discovery` returning its IP and WebSocket URL for programmatic discovery.
+- **Mobile slide-out navigation drawer** — Replaced the bottom tab bar with a native-feeling hamburger menu and slide-out drawer with smooth open/close animations, backdrop overlay, and touch-friendly targets.
+- **History page** — New `/history` page with three tabs: Pairing, Transfers, and Clipboard. All history persists in localStorage across restarts. Includes search, direction filtering, and clear history.
+- **ClockIcon** — Added to the icon set for the History page.
+- **Android permissions** — Added `CAMERA`, `ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE`, `CHANGE_WIFI_MULTICAST_STATE` to AndroidManifest.xml. Added `usesCleartextTraffic="true"` and camera hardware feature declarations.
+
+### Fixed
+- **Android cannot discover Desktop** — Root cause: default `ws://localhost:4001` resolves to the phone itself. Fixed by auto-starting the signaling server in Electron and persisting the signaling URL when configured via QR scan or settings.
+- **Camera permission not requested on Android** — Root cause: `CAMERA` permission was missing from AndroidManifest.xml. Added the permission declaration; Capacitor's WebView now triggers the runtime permission dialog automatically.
+- **"Signaling not available" error on Desktop** — Root cause: signaling server was not running. Fixed by auto-starting it in the Electron main process.
+- **WebSocket errors silently swallowed** — Added connection status callback to `WebMdnsTransport` for UI feedback on connection state.
+- **QR scan not updating signaling URL** — QR scan now calls `updateSignalingUrl()` to redirect the transport to the correct server before sending pairing signals.
+- **Version strings inconsistent** — All version references across the codebase now consistently use `v0.1.3-A` prefix.
+- **Android build missing `ANDROID_HOME`** — `cap:build:android` script now exports all required environment variables.
+- **Clipboard sync not writing to system clipboard on Electron** — Added `writeToClipboard()` call on `onSyncReceived`.
+- **Bottom nav padding unnecessary** — Removed `pb-20` from main content area since bottom nav was replaced by drawer.
+
+### Changed
+- **`DeviceBeacon` interface** — Added optional `serverUrl` field for signaling server address.
+- **`RelayDiscovery` constructor** — Accepts `serverUrl` option, included in multicast beacons.
+- **`WebMdnsTransport`** — Added `updateUrl()`, `getUrl()`, `setOnConnectionStatus()` methods. Saves/loads signaling URL from localStorage. Auto-uses saved URL on startup.
+- **`CoreContext` interface** — Added `updateSignalingUrl()` method.
+- **`PairingPage`** — QR scan now extracts and applies the signaling server URL from the QR payload.
+- **Navigation** — Added "History" link to both desktop sidebar and mobile drawer.
+- **`Sidebar`** — Desktop sidebar unchanged. Mobile replaced bottom nav with hamburger-triggered slide-out drawer.
+- **`AppShell`** — Version bumped to v0.1.3-A.
+- **`package.json`** — Version bumped to 0.1.3-A.
+- **`android/app/build.gradle`** — versionCode 4, versionName 0.1.3-A.
+
+### Removed
+- Mobile bottom navigation bar (replaced by slide-out drawer).
+
+---
+
 ## [v0.1.2-A] - 2026-07-18
 
 ### Added

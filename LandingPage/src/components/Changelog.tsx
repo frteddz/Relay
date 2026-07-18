@@ -2,6 +2,48 @@ import { useState } from "react";
 
 const versions = [
   {
+    version: "0.1.3-A",
+    date: "July 19, 2026",
+    tag: "Alpha",
+    tagColor: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+    changes: [
+      {
+        type: "Added",
+        items: [
+          "Embedded signaling server — auto-starts on Electron launch",
+          "Signaling server URL broadcast in UDP beacons",
+          "Mobile slide-out navigation drawer replacing bottom tab bar",
+          "History page with pairing, transfer, and clipboard logs",
+          "Android camera and network permissions for QR scanning",
+          "HTTP discovery endpoint on signaling server",
+          "Camera detection, multi-camera selector, and no-camera fallback for desktop QR scanning",
+        ],
+      },
+      {
+        type: "Fixed",
+        items: [
+          "Android cannot discover Desktop (signaling server not auto-started)",
+          "Camera permission not requested on Android (missing from manifest)",
+          "Signaling not available error on Desktop (server not running)",
+          "WebSocket errors silently swallowed — added connection status callback",
+          "QR scan not updating signaling URL on target device",
+          "Version strings inconsistent across codebase",
+          "Android build missing ANDROID_HOME in npm script",
+          "Clipboard sync not writing to system clipboard on Electron",
+        ],
+      },
+      {
+        type: "Changed",
+        items: [
+          "DeviceBeacon includes optional serverUrl field",
+          "WebMdnsTransport saves/restores signaling URL from localStorage",
+          "PairingPage QR scan auto-configures connection URL",
+          "CoreContext exposes updateSignalingUrl method",
+        ],
+      },
+    ],
+  },
+  {
     version: "0.1.2-A",
     date: "July 18, 2026",
     tag: "Alpha",
@@ -37,6 +79,47 @@ const versions = [
         items: [
           "PairingPage redesigned with three tabs: Show Code, Scan QR, Enter Code",
           "Short code lifecycle managed through CoreContext",
+        ],
+      },
+    ],
+  },
+  {
+    version: "0.1.1-dev",
+    date: "July 17, 2026",
+    tag: "Dev Build",
+    tagColor: "bg-zinc-500/15 text-zinc-400 border-zinc-500/20",
+    note: "Broken on mobile. Never publicly released.",
+    changes: [
+      {
+        type: "Added",
+        items: [
+          "Capacitor setup for Android builds",
+          "Multi-instance dev mode (MI1–MI6)",
+          "Custom title bar with window controls",
+          "Light/dark theme system with persistence",
+          "Animated loading screen on startup",
+          "WebSocket signaling server with room management",
+          "Cross-platform clipboard sync via IPC and WebSocket",
+          "TCP file transfers with real-time progress",
+          "Desktop notifications for pairing, files, and clipboard",
+          "First-run Terms & Conditions with scroll-to-accept",
+          "Pairing state persistence across restarts",
+        ],
+      },
+      {
+        type: "Fixed",
+        items: [
+          "Same-IP device discovery filter",
+          "Pairing lifecycle trust propagation",
+          "Clipboard sync not writing to system clipboard",
+          "Toggle switch thumb alignment",
+        ],
+      },
+      {
+        type: "Changed",
+        items: [
+          "Signaling architecture reworked from unicast to multicast",
+          "IPC chain updated with targetId for pairing requests",
         ],
       },
     ],
@@ -126,6 +209,9 @@ export default function Changelog() {
                         <span className="text-xs text-zinc-500 ml-auto hidden sm:block">{ver.date}</span>
                       </div>
                       <span className="text-xs text-zinc-500 sm:hidden mt-1 block">{ver.date}</span>
+                      {"note" in ver && ver.note && (
+                        <p className="mt-2 text-xs text-zinc-500 italic">{ver.note}</p>
+                      )}
                     </div>
                   </button>
 

@@ -9,6 +9,11 @@ import { uid } from "../../shared/utils/format";
 
 type TabType = "generate" | "enter" | "scan";
 
+interface CameraDevice {
+  id: string;
+  label: string;
+}
+
 function generateShortCode(): string {
   const v = new Uint32Array(1);
   crypto.getRandomValues(v);
@@ -29,6 +34,10 @@ export function PairingPage() {
   const [scanStatus, setScanStatus] = useState<"" | "scanning" | "pairing" | "paired" | "error">("");
   const [scanError, setScanError] = useState("");
   const [scannedDevice, setScannedDevice] = useState<{ deviceId: string; deviceName: string } | null>(null);
+
+  const [cameras, setCameras] = useState<CameraDevice[]>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState("");
+  const [cameraStatus, setCameraStatus] = useState<"idle" | "detecting" | "ready" | "none">("idle");
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
@@ -73,6 +82,33 @@ export function PairingPage() {
     return () => clearInterval(id);
   }, [expiry]);
 
+  const detectCameras = useCallback(async () => {
+    setCameraStatus("detecting");
+    try {
+      const devices = await Html5Qrcode.getCameras();
+      if (!devices || devices.length === 0) {
+        setCameraStatus("none");
+        setCameras([]);
+        return;
+      }
+      const mapped = devices.map((d) => ({ id: d.id, label: d.label || `Camera ${d.id.slice(0, 8)}` }));
+      setCameras(mapped);
+      const rear = mapped.find((c) => /back|rear|environment|world/i.test(c.label));
+      const selected = rear ?? mapped[0];
+      setSelectedCameraId(selected.id);
+      setCameraStatus("ready");
+    } catch {
+      setCameraStatus("none");
+      setCameras([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tab === "scan" && cameraStatus === "idle") {
+      detectCameras();
+    }
+  }, [tab, cameraStatus, detectCameras]);
+
   const handleRefresh = () => {
     setExpiry(0);
     setTimeout(generate, 50);
@@ -102,6 +138,16 @@ export function PairingPage() {
 
   const startScanner = async () => {
     if (scannerRef.current) return;
+    if (cameraStatus === "none") {
+      setScanStatus("error");
+      setScanError("No cameras detected. Connect a webcam and try again.");
+      return;
+    }
+    if (!selectedCameraId) {
+      setScanStatus("error");
+      setScanError("No camera selected.");
+      return;
+    }
     setScanStatus("scanning");
     setScanError("");
     setScannedDevice(null);
@@ -114,7 +160,7 @@ export function PairingPage() {
       scannerRef.current = scanner;
 
       await scanner.start(
-        { facingMode: "environment" },
+        selectedCameraId,
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
           handleScanResult(decodedText);
@@ -123,7 +169,14 @@ export function PairingPage() {
       );
     } catch (err: any) {
       setScanStatus("error");
-      setScanError(err?.message ?? "Could not start camera. Make sure camera permissions are granted.");
+      const msg = err?.message ?? "Could not start camera.";
+      if (/permission|NotAllowed|denied/i.test(msg)) {
+        setScanError("Camera permission denied. Allow camera access in your browser/system settings and try again.");
+      } else if (/NotFound|not found|requested device/i.test(msg)) {
+        setScanError("Selected camera not found. Try selecting a different camera.");
+      } else {
+        setScanError(msg);
+      }
       stopScanner();
     }
   };
@@ -242,9 +295,36 @@ export function PairingPage() {
         <Card>
           <SectionTitle title="Scan QR Code" subtitle="Point your camera at a Relay pairing QR code" />
           <div className="flex flex-col items-center gap-4 py-4">
+            {cameraStatus === "detecting" && (
+              <div className="flex flex-col items-center gap-2 text-sm text-white/50">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-brand-400" />
+                <p>Detecting cameras...</p>
+              </div>
+            )}
+            {cameraStatus === "none" && scanStatus === "" && (
+              <div className="flex flex-col items-center gap-3 rounded-xl bg-white/5 p-6 text-center">
+                <p className="text-sm text-white/70">No camera detected on this device.</p>
+                <p className="text-xs text-white/40">Connect a webcam or use the "Enter Code" tab to pair manually.</p>
+                <Button size="sm" variant="ghost" onClick={detectCameras}>Retry</Button>
+              </div>
+            )}
+            {cameraStatus === "ready" && cameras.length > 1 && scanStatus === "" && (
+              <div className="flex w-full max-w-sm flex-col gap-1.5">
+                <label className="text-xs font-medium text-white/50">Camera</label>
+                <select
+                  value={selectedCameraId}
+                  onChange={(e) => setSelectedCameraId(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20"
+                >
+                  {cameras.map((c) => (
+                    <option key={c.id} value={c.id}>{c.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div id="qr-scanner-region" ref={scannerContainerRef} className="w-full max-w-sm overflow-hidden rounded-2xl" />
 
-            {scanStatus === "" && (
+            {scanStatus === "" && cameraStatus === "ready" && (
               <Button onClick={startScanner}>Start Scanning</Button>
             )}
             {scanStatus === "scanning" && (
@@ -265,8 +345,8 @@ export function PairingPage() {
             )}
             {scanStatus === "error" && (
               <div className="flex flex-col items-center gap-2">
-                <p className="text-sm text-rose-300">{scanError}</p>
-                <Button size="sm" onClick={() => { setScanStatus(""); setScanError(""); }}>Try Again</Button>
+                <p className="text-center text-sm text-rose-300">{scanError}</p>
+                <Button size="sm" onClick={() => { setScanStatus(""); setScanError(""); detectCameras(); }}>Try Again</Button>
               </div>
             )}
           </div>

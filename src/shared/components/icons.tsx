@@ -121,3 +121,12 @@ export function BellIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function ClockIcon({ className }: IconProps) {
+  return (
+    <svg className={className ?? base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}

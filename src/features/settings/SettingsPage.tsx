@@ -143,7 +143,7 @@ export function SettingsPage() {
       <Card className="hover:border-white/15">
         <SectionTitle title="About Relay" />
         <div className="space-y-1 text-sm text-white/55">
-          <p>Relay v0.1.2-A</p>
+          <p>Relay v0.1.3-A</p>
           <p>Local-first · Privacy-first · Open source</p>
           <p className="text-white/35">No telemetry. No ads. No accounts.</p>
         </div>

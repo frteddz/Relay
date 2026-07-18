@@ -21,6 +21,7 @@ export interface DeviceBeacon {
   version: string;
   capabilities: { clipboard: boolean; fileTransfer: boolean; linkShare: boolean };
   ts: number;
+  serverUrl?: string;
 }
 
 export interface SignalingMessage {
@@ -115,7 +116,7 @@ export class RelayDiscovery {
   private wsAnnounceTimer: ReturnType<typeof setInterval> | null = null;
   private wsDeviceList = new Map<string, DeviceBeacon>();
 
-  constructor(opts: { name: string; version?: string; devMode?: boolean; signalingUrl?: string }) {
+  constructor(opts: { name: string; version?: string; devMode?: boolean; signalingUrl?: string; serverUrl?: string }) {
     this.machineId = getMachineId(opts.devMode ?? false);
     this.localIp = getLocalIp();
     this.wsUrl = opts.signalingUrl ?? process.env.SIGNALING_URL ?? "ws://localhost:4001";
@@ -126,9 +127,10 @@ export class RelayDiscovery {
       type: "desktop",
       os: detectOs(),
       ip: this.localIp,
-      version: opts.version ?? "v0.1.2-A",
+      version: opts.version ?? "v0.1.3-A",
       capabilities: { clipboard: true, fileTransfer: true, linkShare: true },
       ts: Date.now(),
+      serverUrl: opts.serverUrl,
     };
   }
 

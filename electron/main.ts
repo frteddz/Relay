@@ -6,6 +6,7 @@ import fs from "node:fs";
 import { RelayDiscovery } from "./discovery";
 import type { SignalingMessage } from "./discovery";
 import type { TransferRequestHeader, TransferProgress, TransferEnd } from "./transfer";
+import { startSignalingServer } from "./signaling-server";
 
 const isDev = !app.isPackaged;
 const isDevMode = isDev && !process.env.RELAY_PROD_TEST;
@@ -27,6 +28,7 @@ if (!isDevMode) {
 
 let mainWindow: BrowserWindow | null = null;
 let discovery: RelayDiscovery | null = null;
+let signalingServer: { port: number; url: string; stop: () => void } | null = null;
 
 function getDeviceName(): string {
   return process.env.RELAY_DEVICE_NAME ?? `Relay (${os.hostname()})`;
@@ -88,11 +90,29 @@ function showNotification(title: string, body: string, channel?: string): void {
 function startDiscovery(deviceName: string): void {
   if (discovery?.isRunning()) return;
 
+  if (!signalingServer) {
+    try {
+      signalingServer = startSignalingServer({ port: 4001 });
+      console.log(`[Relay] Signaling server started on ${signalingServer.url}`);
+    } catch {
+      console.warn("[Relay] Failed to start signaling server on port 4001, trying 4002...");
+      try {
+        signalingServer = startSignalingServer({ port: 4002 });
+        console.log(`[Relay] Signaling server started on ${signalingServer.url}`);
+      } catch (err) {
+        console.error("[Relay] Could not start signaling server:", err);
+      }
+    }
+  }
+
+  const wsUrl = signalingServer?.url ?? process.env.SIGNALING_URL ?? "ws://localhost:4001";
+
   discovery = new RelayDiscovery({
     name: deviceName,
-    version: "v0.1.2-A",
+    version: "v0.1.3-A",
     devMode: isDevMode,
-    signalingUrl: process.env.SIGNALING_URL,
+    signalingUrl: wsUrl,
+    serverUrl: signalingServer?.url,
   });
 
   discovery.start(
@@ -148,6 +168,8 @@ function startDiscovery(deviceName: string): void {
 function stopDiscovery(): void {
   discovery?.stop();
   discovery = null;
+  signalingServer?.stop();
+  signalingServer = null;
   sendToRenderer("discovery:stopped");
 }
 

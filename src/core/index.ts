@@ -31,6 +31,7 @@ export interface CoreContext {
   sendSignal?(payload: Record<string, unknown>, targetId?: string): void;
   activeShortCode?: string;
   setActiveShortCode?(code: string | null): void;
+  updateSignalingUrl?(url: string): void;
 }
 
 export function createCore(bus: EventBus = eventBus, signalingUrl?: string): CoreContext {
@@ -110,5 +111,6 @@ export function createCore(bus: EventBus = eventBus, signalingUrl?: string): Cor
     sendSignal: webTransport ? (payload, targetId) => webTransport.sendSignal(payload, targetId) : undefined,
     activeShortCode,
     setActiveShortCode: (code) => { activeShortCode = code ?? undefined; },
+    updateSignalingUrl: webTransport ? (url) => webTransport.updateUrl(url) : undefined,
   };
 }

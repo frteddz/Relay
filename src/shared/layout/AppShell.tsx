@@ -26,7 +26,7 @@ export function AppShell() {
         <TitleBar />
         <div className="flex flex-1 overflow-hidden md:flex-row">
           <Sidebar />
-          <main className="relative flex-1 overflow-y-auto pb-20 md:pb-0">
+          <main className="relative flex-1 overflow-y-auto md:pb-0">
             <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-black/30 px-4 py-3 backdrop-blur-xl sm:px-6 md:px-8 md:py-4">
               <div className="flex items-center gap-3 text-sm text-white/60">
                 <span
@@ -42,7 +42,7 @@ export function AppShell() {
                     : "Discovering devices…"}
                 </span>
               </div>
-              <span className="hidden text-xs text-white/40 sm:inline">v0.1.2-A · local-first</span>
+              <span className="hidden text-xs text-white/40 sm:inline">v0.1.3-A · local-first</span>
             </header>
             <div className="animate-fade-in p-3 sm:p-6 md:p-8">
               <Outlet />
