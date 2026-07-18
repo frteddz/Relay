@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-[#0a0a0b] text-[#e4e4e7];
+}
+
+::selection {
+  @apply bg-relay-500/30 text-white;
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-relay-400 to-purple-400;
+  }
+  .glass {
+    @apply bg-white/[0.03] border border-white/[0.06] backdrop-blur-xl;
+  }
+  .glass-hover {
+    @apply hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300;
+  }
+  .glow {
+    box-shadow: 0 0 60px -12px rgba(108, 99, 255, 0.15);
+  }
+}

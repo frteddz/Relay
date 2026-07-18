@@ -1,0 +1,17 @@
+{
+  "appId": "org.relay.app",
+  "productName": "Relay",
+  "directories": {
+    "output": "release"
+  },
+  "files": ["dist", "dist-electron", "assets/**/*"],
+  "extraResources": ["assets/**/*"],
+  "linux": {
+    "target": ["deb"],
+    "category": "Utility",
+    "maintainer": "Relay Contributors"
+  },
+  "win": {
+    "target": ["nsis"]
+  }
+}
