@@ -22,6 +22,16 @@ const platforms = [
     supported: true,
   },
   {
+    name: "Android",
+    os: "android" as const,
+    icon: (
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/>
+      </svg>
+    ),
+    supported: true,
+  },
+  {
     name: "macOS",
     os: "macos" as const,
     icon: (
@@ -44,7 +54,7 @@ export default function CrossPlatform() {
             Cross-platform by design
           </h2>
           <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
-            Install Relay on any combination of Windows and Linux machines.
+            Install Relay on any combination of Windows, Linux, and Android devices.
             They will find each other instantly.
           </p>
         </div>

@@ -19,6 +19,15 @@ Thumbs.db
 
 # Environment
 .env
+.env.local
+
+# Capacitor / Android
+android/app/build/
+android/.gradle/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+.env
 .env.*
 
 # IDE

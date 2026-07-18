@@ -1,6 +1,6 @@
 {
   "name": "relay",
-  "version": "0.1.0",
+  "version": "0.1.1-dev",
   "description": "A modern, open-source cross-platform device hub.",
   "main": "dist-electron/main.js",
   "author": "Relay Contributors",
@@ -21,6 +21,8 @@
     "package:win": "npm run electron:pack && electron-builder --win nsis",
     "package:web": "mkdir -p release && VITE_BASE_URL=/ vite build --outDir=release/web",
     "package:all": "npm run electron:pack && electron-builder --linux deb --win nsis",
+    "cap:sync": "npx cap sync",
+    "cap:build:android": "npm run build && npx cap sync && export JAVA_HOME=/mnt/HDD/jdk21/jdk-21.0.7+6 && export GRADLE_USER_HOME=/mnt/HDD/gradle-home && cd android && ./gradlew assembleDebug",
     "MI1": "concurrently -k \"vite\" \"wait-on tcp:5173 && npm run electron:build:main && npm run electron:build:preload && RELAY_INSTANCE_ID=mi_1 RELAY_DEVICE_NAME=Relay-Alpha electron .\"",
     "MI2": "wait-on tcp:5173 && RELAY_INSTANCE_ID=mi_2 RELAY_DEVICE_NAME=Relay-Beta electron .",
     "MI3": "wait-on tcp:5173 && RELAY_INSTANCE_ID=mi_3 RELAY_DEVICE_NAME=Relay-Gamma electron .",
@@ -29,16 +31,20 @@
     "MI6": "wait-on tcp:5173 && RELAY_INSTANCE_ID=mi_6 RELAY_DEVICE_NAME=Relay-Zeta electron ."
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/cli": "^8.4.2",
+    "@capacitor/clipboard": "^8.0.1",
+    "@capacitor/core": "^8.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
-    "zustand": "^4.5.5",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@types/node": "^20.14.0",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
-    "@types/node": "^20.14.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.3.1",

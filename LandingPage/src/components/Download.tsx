@@ -5,17 +5,17 @@ export default function Download() {
 
   return (
     <section id="download" className="py-24 sm:py-32 border-t border-white/[0.06]">
-      <div className="mx-auto max-w-5xl px-6">
+      <div className="mx-auto max-w-7xl px-6">
         <div className="text-center">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Download Relay
           </h2>
           <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
-            Available for Windows and Linux. Your download is highlighted below.
+            Available for Windows, Linux, and Android. Your download is highlighted below.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-3 max-w-3xl mx-auto">
+        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
           {downloads.map((dl) => {
             const isDetected = os === dl.os;
             return (

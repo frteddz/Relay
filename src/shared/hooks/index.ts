@@ -14,10 +14,10 @@ export function useInterval(callback: () => void, delay: number | null): void {
   }, [delay]);
 }
 
+import { writeToClipboard } from "../utils/clipboard";
+
 export function useClipboardWrite(): (text: string) => void {
   return useCallback((text: string) => {
-    if (navigator.clipboard?.writeText) {
-      void navigator.clipboard.writeText(text);
-    }
+    void writeToClipboard(text).catch(() => undefined);
   }, []);
 }

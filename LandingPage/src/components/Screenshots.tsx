@@ -5,6 +5,8 @@ const items = [
   { label: "Devices", src: "screenshots/devices.png" },
   { label: "Clipboard", src: "screenshots/clipboard.png" },
   { label: "Transfers", src: "screenshots/transfers.png" },
+  { label: "Mobile Dashboard", src: "screenshots/mobile-dashboard.png" },
+  { label: "Mobile Devices", src: "screenshots/mobile-devices.png" },
 ];
 
 export default function Screenshots() {
@@ -16,11 +18,11 @@ export default function Screenshots() {
             See it in action
           </h2>
           <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
-            A clean, modern interface designed for productivity.
+            A clean, modern interface designed for productivity across all your devices.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-8 sm:grid-cols-2">
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <Screenshot key={item.label} src={item.src} label={item.label} />
           ))}

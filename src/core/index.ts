@@ -7,6 +7,7 @@ import { TransferManager } from "./TransferManager";
 import { ClipboardService } from "./ClipboardService";
 import { IpcMdnsTransport } from "./discovery/IpcMdnsTransport";
 import { WebMdnsTransport } from "./discovery/WebMdnsTransport";
+import { writeToClipboard } from "../shared/utils/clipboard";
 
 import type {
   IClipboardService,
@@ -61,8 +62,8 @@ export function createCore(bus: EventBus = eventBus): CoreContext {
       if (payload.type === "clipboard-sync" && payload.from) {
         if (pairing.isTrusted(payload.from as string)) {
           clipboardService.receive(payload.text as string, payload.from as string);
-          if (navigator.clipboard && typeof payload.text === "string") {
-            navigator.clipboard.writeText(payload.text).catch(() => undefined);
+          if (typeof payload.text === "string") {
+            writeToClipboard(payload.text).catch(() => undefined);
           }
         }
       }

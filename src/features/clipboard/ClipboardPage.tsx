@@ -6,6 +6,7 @@ import { useStore } from "../../shared/store";
 import { sendClipboardToDevices } from "../../shared/services/connectCore";
 import { getCore } from "../../shared/services/connectCore";
 import { formatRelative } from "../../shared/utils/format";
+import { writeToClipboard } from "../../shared/utils/clipboard";
 
 const LOCAL_DEVICE_ID = "local";
 
@@ -35,7 +36,7 @@ export function ClipboardPage() {
   const handleSaveLocal = () => {
     if (!text.trim()) return;
     getCore().clipboard.publish(text);
-    if (navigator.clipboard?.writeText) void navigator.clipboard.writeText(text).catch(() => undefined);
+    void writeToClipboard(text).catch(() => undefined);
     setText("");
     setSaveStatus("saved");
   };
@@ -120,7 +121,7 @@ export function ClipboardPage() {
                 className="w-full rounded-xl bg-white/5 p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-brand-400/70"
                 onClick={() => {
                   setText(entry.text);
-                  if (navigator.clipboard?.writeText) void navigator.clipboard.writeText(entry.text).catch(() => undefined);
+                  void writeToClipboard(entry.text).catch(() => undefined);
                 }}
               >
                 <p className="line-clamp-2 text-sm text-white/85">{entry.text}</p>

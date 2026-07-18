@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { windowsIcon, linuxIcon } from "./icons";
+import { windowsIcon, linuxIcon, androidIcon } from "./icons";
 
 export interface DownloadEntry {
   platform: string;
   arch: string;
   format: string;
   url: string;
-  os: "windows" | "linux";
+  os: "windows" | "linux" | "android";
   icon: ReactNode;
 }
 
@@ -27,13 +27,22 @@ export const downloads: DownloadEntry[] = [
     os: "linux",
     icon: linuxIcon,
   },
+  {
+    platform: "Android",
+    arch: "Universal",
+    format: ".apk",
+    url: "https://github.com/frteddz/Relay/releases/download/v0.1.1-dev/Relay-v0.1.1-dev.apk",
+    os: "android",
+    icon: androidIcon,
+  },
 ];
 
-export function detectOS(): "windows" | "linux" | "macos" | "other" {
+export function detectOS(): "windows" | "linux" | "android" | "macos" | "other" {
   if (typeof navigator === "undefined") return "other";
   const ua = navigator.userAgent;
   if (/Windows/i.test(ua)) return "windows";
-  if (/Linux|X11/i.test(ua) && !/Android/i.test(ua)) return "linux";
+  if (/Android/i.test(ua)) return "android";
+  if (/Linux|X11/i.test(ua)) return "linux";
   if (/Mac OS/i.test(ua) && !/like Mac/i.test(ua)) return "macos";
   return "other";
 }
